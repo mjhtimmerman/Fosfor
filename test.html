@@ -1,0 +1,21 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabase = supabase.createClient(
+  "https://fxelsqdxlgfcibgpnhnk.supabase.co",
+  "sb_publishable_E1a3k9KJ_xW_caZ4eKHK1A_z-9999LY"
+);
+
+async function test() {
+  const { data, error } = await supabase
+    .from("campaigns")
+    .select("campaign_id, campaign_name, status, daily_budget")
+    .order("start_time", { ascending: false })
+    .limit(5);
+
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
+}
+
+test();
+</script>
