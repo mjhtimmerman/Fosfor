@@ -232,28 +232,27 @@
           </div>
         </div>
 
-<!-- Middenkolom (Analyse + Actie) -->
-<div class="lg:col-span-4 flex flex-col gap-4">
-
-  <!-- Analyse (boven) -->
-  <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl border border-border-light dark:border-border-dark flex-1 flex flex-col">
-    <h2 class="text-base font-bold mb-2">Analyse</h2>
-    <div id="analysis_content" class="text-xs space-y-1.5">
-      Analyse wordt geladen...
-    </div>
-  </div>
-
-  <!-- Actie (onder) -->
-  <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl border border-border-light dark:border-border-dark flex-1 flex flex-col">
-    <h2 class="text-base font-bold mb-2">Actie</h2>
-    <div id="action_content" class="text-xs space-y-1.5">
-      Acties worden geladen...
-    </div>
-  </div>
-
-</div>
-
-
+        <!-- Middenkolom -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+          <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl border border-border-light dark:border-border-dark flex-grow flex flex-col">
+            <h2 class="text-base font-bold mb-2">Analyse</h2>
+            <!-- Voor nu statische tekst; kan later ook AI-driven worden -->
+            <ul class="space-y-1.5 text-xs">
+              <li class="flex items-start gap-2">
+                <span class="text-text-secondary-light dark:text-text-secondary-dark mt-0.5">•</span>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark">CTR en CPC worden vergeleken met de benchmark per categorie en senioriteit.</p>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-text-secondary-light dark:text-text-secondary-dark mt-0.5">•</span>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark">Score geeft een eerste inschatting of de campagne boven of onder de verwachting presteert.</p>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-text-secondary-light dark:text-text-secondary-dark mt-0.5">•</span>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark">CPA en CPH tonen voorlopig “-” zolang er nog geen hire- of afspraakdata beschikbaar is.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <!-- Rechterkolom -->
         <div class="lg:col-span-4">
