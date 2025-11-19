@@ -243,7 +243,13 @@
     setText("preview_body",c.creative_body);
     const img=document.getElementById("preview_image");img.src=c.creative_image;
     const analysisBox = document.getElementById("analysis_content");
+    if (c.ai_analyse && c.ai_analyse.trim() !== "") {
+    analysisBox.innerText = c.ai_analyse;
+  } else {
+    analysisBox.innerText = "Analyse wordt geladen...";
   }
+}
+
 
   loadActiveCampaigns();
 </script>
