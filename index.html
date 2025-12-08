@@ -338,8 +338,26 @@ function compareValue(id, value, avg) {
   } else {
     analysisBox.innerText = "Analyse wordt geladen...";
   }
+function setColumn(id, pct) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const h = Math.max(5, Math.min(100, pct)); // nooit 0, max 100
+  el.style.height = h + "%";
 }
 
+// campagne → benchmark ratio
+setColumn("col_ctr_actual", c.ctr);
+setColumn("col_ctr_bench", benchmarks?.avg_ctr);
+
+setColumn("col_ctl_actual", c.ctl);
+setColumn("col_ctl_bench", benchmarks?.avg_ctl);
+
+setColumn("col_lth_actual", c.lth);
+setColumn("col_lth_bench", benchmarks?.avg_lth);
+
+setColumn("col_freq_actual", c.frequency * 10);       // freq schaal je meestal
+setColumn("col_freq_bench", benchmarks?.avg_frequency * 10);
+}
 
   loadActiveCampaigns();
 </script>
