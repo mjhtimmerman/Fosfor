@@ -338,26 +338,44 @@ function compareValue(id, value, avg) {
   } else {
     analysisBox.innerText = "Analyse wordt geladen...";
   }
-function setColumn(id, pct) {
+function setColumn(id, value, scale = 10) {
   const el = document.getElementById(id);
   if (!el) return;
-  const h = Math.max(5, Math.min(100, pct)); // nooit 0, max 100
+
+  if (value == null || isNaN(value)) {
+    el.style.height = "8%"; // fallback minimale hoogte
+    return;
+  }
+
+  let h = value * scale;
+
+  // minimale visuele hoogte
+  h = Math.max(h, 8);
+
+  // maximale visuele hoogte
+  h = Math.min(h, 100);
+
   el.style.height = h + "%";
 }
 
-// campagne → benchmark ratio
-setColumn("col_ctr_actual", c.ctr);
-setColumn("col_ctr_bench", benchmarks?.avg_ctr);
+// Verticale staafdiagrammen met scaling:
 
-setColumn("col_ctl_actual", c.ctl);
-setColumn("col_ctl_bench", benchmarks?.avg_ctl);
+// CTR — meestal 0–5%, dus schaal ×20
+setColumn("col_ctr_actual", c.ctr, 20);
+setColumn("col_ctr_bench", benchmarks?.avg_ctr, 20);
 
-setColumn("col_lth_actual", c.lth);
-setColumn("col_lth_bench", benchmarks?.avg_lth);
+// CTL — 0–20% → schaal ×5
+setColumn("col_ctl_actual", c.ctl, 5);
+setColumn("col_ctl_bench", benchmarks?.avg_ctl, 5);
 
-setColumn("col_freq_actual", c.frequency * 10);       // freq schaal je meestal
-setColumn("col_freq_bench", benchmarks?.avg_frequency * 10);
-}
+// LTH — 0–10% → schaal ×10
+setColumn("col_lth_actual", c.lth, 10);
+setColumn("col_lth_bench", benchmarks?.avg_lth, 10);
+
+// Frequentie — 0–5 → schaal ×20
+setColumn("col_freq_actual", c.frequency, 20);
+setColumn("col_freq_bench", benchmarks?.avg_frequency, 20);
+
 
   loadActiveCampaigns();
 </script>
