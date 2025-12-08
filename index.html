@@ -229,13 +229,13 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const { createClient } = supabase;
-  const supabaseClient = createClient(
-    "https://fxelsqdxlgfcibgpnhnk.supabase.co",
-    "sb_publishable_E1a3k9KJ_xW_caZ4eKHK1A_z-9999LY"
-  );
+const { createClient } = supabase;
+const supabaseClient = createClient(
+  "https://fxelsqdxlgfcibgpnhnk.supabase.co",
+  "sb_publishable_E1a3k9KJ_xW_caZ4eKHK1A_z-9999LY"
+);
 
-  async function loadBenchmarks(category) {
+async function loadBenchmarks(category) {
   const { data } = await supabaseClient
     .from("category_benchmarks")
     .select("*")
@@ -248,7 +248,6 @@
 function compareValue(id, value, avg) {
   const el = document.getElementById(id);
   if (!el) return;
-
   if (avg === null || avg === undefined || avg === 0) {
     el.innerText = "-";
     return;
@@ -259,107 +258,124 @@ function compareValue(id, value, avg) {
   el.innerText = `${prefix}${diff.toFixed(1)}%`;
 }
 
-  function setText(id,val){const el=document.getElementById(id);if(el)el.innerText=val??"-";}
-  function euro(v){if(!v)return "-";const n=parseFloat(v);return isNaN(n)?"-":"€"+n.toFixed(2);}
-  function num(v){return v??"-";}
-
-  async function loadActiveCampaigns(){
-    const {data}=await supabaseClient.from("campaigns").select("*").gt("daily_budget",0).eq("status","ACTIVE");
-    const dd=document.getElementById("campaign_dropdown");
-    dd.innerHTML="";
-    data.forEach(c=>{
-      const o=document.createElement("option");
-      o.value=c.campaign_id;o.textContent=c.campaign_name;dd.appendChild(o);
-    });
-    dd.addEventListener("change",e=>loadCampaignData(e.target.value));
-  }
-
-  function computeScoreColor(cpl) {
-  if (cpl === null || cpl === undefined || isNaN(parseFloat(cpl))) {
-    return { text: "-", color: "text-text-secondary-light" };
-  }
-
-  const value = parseFloat(cpl);
-
-  if (value <= 15) {
-    return { text: "Goed", color: "text-green-500" };
-  }
-  if (value <= 25) {
-    return { text: "Matig", color: "text-orange-500" };
-  }
-  return { text: "Slecht", color: "text-red-500" };
+function setText(id,val){
+  const el=document.getElementById(id);
+  if(el) el.innerText = val ?? "-";
 }
-  
-  async function loadCampaignData(id){
-    setText("funnel_impressions", "-");
-    setText("funnel_clicks", "-");
-    setText("funnel_leads", "-");
-    setText("funnel_hires", "-");
-    const {data}=await supabaseClient.from("campaigns").select("*").eq("campaign_id",id).limit(1);
-    const c=data[0];
-    // Benchmarks ophalen
-    const benchmarks = await loadBenchmarks(c.category);
 
-// Benchmark vergelijkingen weergeven
-   if (benchmarks) {
+function euro(v){
+  if(!v) return "-";
+  const n=parseFloat(v);
+  return isNaN(n)?"-":"€"+n.toFixed(2);
+}
+
+function num(v){ return v ?? "-"; }
+
+function computeScoreColor(cpl) {
+  if (cpl == null || isNaN(parseFloat(cpl))) {
+    return { text:"-", color:"text-text-secondary-light" };
+  }
+  const value = parseFloat(cpl);
+  if (value <= 15) return { text:"Goed", color:"text-green-500" };
+  if (value <= 25) return { text:"Matig", color:"text-orange-500" };
+  return { text:"Slecht", color:"text-red-500" };
+}
+
+function setColumn(id, value, scale = 10) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (value == null || isNaN(value)) {
+    el.style.height = "8%";
+    return;
+  }
+
+  let h = value * scale;
+  h = Math.max(h, 8);
+  h = Math.min(h, 100);
+
+  el.style.height = h + "%";
+}
+
+async function loadActiveCampaigns(){
+  const {data} = await supabaseClient
+    .from("campaigns")
+    .select("*")
+    .gt("daily_budget",0)
+    .eq("status","ACTIVE");
+
+  const dd=document.getElementById("campaign_dropdown");
+  dd.innerHTML="";
+
+  data.forEach(c=>{
+    const o=document.createElement("option");
+    o.value=c.campaign_id;
+    o.textContent=c.campaign_name;
+    dd.appendChild(o);
+  });
+
+  dd.addEventListener("change", e => loadCampaignData(e.target.value));
+}
+
+async function loadCampaignData(id){
+  setText("funnel_impressions","-");
+  setText("funnel_clicks","-");
+  setText("funnel_leads","-");
+  setText("funnel_hires","-");
+
+  const {data}=await supabaseClient
+      .from("campaigns")
+      .select("*")
+      .eq("campaign_id",id)
+      .limit(1);
+
+  const c=data[0];
+
+  const benchmarks = await loadBenchmarks(c.category);
+
+  // Vergelijkingswaarden
+  if (benchmarks) {
     compareValue("ctr_compare", c.ctr, benchmarks.avg_ctr);
     compareValue("ctl_compare", c.ctl, benchmarks.avg_ctl);
     compareValue("lth_compare", c.lth, benchmarks.avg_lth);
     compareValue("freq_compare", c.frequency, benchmarks.avg_frequency);
-} else {
-    setText("ctr_compare", "-");
-    setText("ctl_compare", "-");
-    setText("lth_compare", "-");
-    setText("freq_compare", "-");
-}
-
-    setText("spend_value",euro(c.spend));
-    setText("cpl_value",euro(c.cpl));
-    setText("cph_value", euro(c.cph));
-    // Score op basis van CPL
-    const scoreEl = document.getElementById("score_value");
-    const score = computeScoreColor(c.cpl);
-    scoreEl.innerText = score.text;
-    scoreEl.className = "text-2xl font-bold tracking-tight " + score.color;
-    setText("funnel_impressions",num(c.impressions));
-    setText("funnel_clicks",num(c.clicks));
-    setText("funnel_leads",num(c.leads));
-    setText("funnel_hires",num(c.hires));
-    // Conversie statistieken invullen
-    setText("stat_ctr", c.ctr !== null ? c.ctr.toFixed(1) + "%" : "-");
-    setText("stat_ctl", c.ctl !== null ? c.ctl.toFixed(1) + "%" : "-");
-    setText("stat_lth", c.lth !== null ? c.lth.toFixed(1) + "%" : "-");
-    setText("stat_freq", c.frequency !== null ? c.frequency.toFixed(2) : "-");
-    setText("preview_body",c.creative_body);
-    const img=document.getElementById("preview_image");img.src=c.creative_image;
-    const analysisBox = document.getElementById("analysis_content");
-    if (c.ai_analyse && c.ai_analyse.trim() !== "") {
-    analysisBox.innerText = c.ai_analyse;
-  } else {
-    analysisBox.innerText = "Analyse wordt geladen...";
   }
-function setColumn(id, pct) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const h = Math.max(5, Math.min(100, pct)); // nooit 0, max 100
-  el.style.height = h + "%";
+
+  setText("spend_value", euro(c.spend));
+  setText("cpl_value", euro(c.cpl));
+  setText("cph_value", euro(c.cph));
+
+  const scoreEl=document.getElementById("score_value");
+  const score = computeScoreColor(c.cpl);
+  scoreEl.innerText = score.text;
+  scoreEl.className = "text-2xl font-bold tracking-tight "+score.color;
+
+  setText("stat_ctr", c.ctr?.toFixed(1) + "%");
+  setText("stat_ctl", c.ctl?.toFixed(1) + "%");
+  setText("stat_lth", c.lth?.toFixed(1) + "%");
+  setText("stat_freq", c.frequency?.toFixed(2));
+
+  // STAAND DIAGRAM
+  setColumn("col_ctr_actual", c.ctr, 20);
+  setColumn("col_ctr_bench", benchmarks?.avg_ctr, 20);
+
+  setColumn("col_ctl_actual", c.ctl, 5);
+  setColumn("col_ctl_bench", benchmarks?.avg_ctl, 5);
+
+  setColumn("col_lth_actual", c.lth, 10);
+  setColumn("col_lth_bench", benchmarks?.avg_lth, 10);
+
+  setColumn("col_freq_actual", c.frequency, 20);
+  setColumn("col_freq_bench", benchmarks?.avg_frequency, 20);
+
+  setText("preview_body", c.creative_body);
+  document.getElementById("preview_image").src = c.creative_image;
+
+  const analysisBox=document.getElementById("analysis_content");
+  analysisBox.innerText = c.ai_analyse || "Analyse wordt geladen...";
 }
 
-// campagne → benchmark ratio
-setColumn("col_ctr_actual", c.ctr);
-setColumn("col_ctr_bench", benchmarks?.avg_ctr);
-
-setColumn("col_ctl_actual", c.ctl);
-setColumn("col_ctl_bench", benchmarks?.avg_ctl);
-
-setColumn("col_lth_actual", c.lth);
-setColumn("col_lth_bench", benchmarks?.avg_lth);
-
-setColumn("col_freq_actual", c.frequency * 10);       // freq schaal je meestal
-setColumn("col_freq_bench", benchmarks?.avg_frequency * 10);
-}
-
-  loadActiveCampaigns();
+// ← DIT STAAT NU EINDLIJK BUITEN ALLE FUNCTIES
+loadActiveCampaigns();
 </script>
-</body>
-</html>
+
