@@ -225,6 +225,22 @@
     dd.addEventListener("change",e=>loadCampaignData(e.target.value));
   }
 
+  function computeScoreColor(cpl) {
+  if (cpl === null || cpl === undefined || isNaN(parseFloat(cpl))) {
+    return { text: "-", color: "text-text-secondary-light" };
+  }
+
+  const value = parseFloat(cpl);
+
+  if (value <= 15) {
+    return { text: "Goed", color: "text-green-500" };
+  }
+  if (value <= 25) {
+    return { text: "Matig", color: "text-orange-500" };
+  }
+  return { text: "Slecht", color: "text-red-500" };
+}
+  
   async function loadCampaignData(id){
     setText("funnel_impressions", "-");
     setText("funnel_clicks", "-");
@@ -235,6 +251,11 @@
     const c=data[0];
     setText("spend_value",euro(c.spend));
     setText("cpl_value",euro(c.cpl));
+    // Score op basis van CPL
+    const scoreEl = document.getElementById("score_value");
+    const score = computeScoreColor(c.cpl);
+    scoreEl.innerText = score.text;
+    scoreEl.className = "text-2xl font-bold tracking-tight " + score.color;
     setText("funnel_impressions",num(c.impressions));
     setText("funnel_clicks",num(c.clicks));
     setText("funnel_leads",num(c.leads));
