@@ -229,6 +229,30 @@
     "sb_publishable_E1a3k9KJ_xW_caZ4eKHK1A_z-9999LY"
   );
 
+  async function loadBenchmarks(category) {
+  const { data } = await supabaseClient
+    .from("category_benchmarks")
+    .select("*")
+    .eq("category", category)
+    .limit(1);
+
+  return data?.[0] || null;
+}
+
+function compareValue(id, value, avg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (avg === null || avg === undefined || avg === 0) {
+    el.innerText = "-";
+    return;
+  }
+
+  const diff = ((value - avg) / avg) * 100;
+  const prefix = diff >= 0 ? "+" : "";
+  el.innerText = `${prefix}${diff.toFixed(1)}%`;
+}
+
   function setText(id,val){const el=document.getElementById(id);if(el)el.innerText=val??"-";}
   function euro(v){if(!v)return "-";const n=parseFloat(v);return isNaN(n)?"-":"€"+n.toFixed(2);}
   function num(v){return v??"-";}
@@ -264,10 +288,25 @@
     setText("funnel_impressions", "-");
     setText("funnel_clicks", "-");
     setText("funnel_leads", "-");
-    setText("funnel_appointments", "-");
     setText("funnel_hires", "-");
     const {data}=await supabaseClient.from("campaigns").select("*").eq("campaign_id",id).limit(1);
     const c=data[0];
+    // Benchmarks ophalen
+    const benchmarks = await loadBenchmarks(c.category);
+
+// Benchmark vergelijkingen weergeven
+   if (benchmarks) {
+    compareValue("ctr_compare", c.ctr, benchmarks.avg_ctr);
+    compareValue("ctl_compare", c.ctl, benchmarks.avg_ctl);
+    compareValue("lth_compare", c.lth, benchmarks.avg_lth);
+    compareValue("freq_compare", c.frequency, benchmarks.avg_frequency);
+} else {
+    setText("ctr_compare", "-");
+    setText("ctl_compare", "-");
+    setText("lth_compare", "-");
+    setText("freq_compare", "-");
+}
+
     setText("spend_value",euro(c.spend));
     setText("cpl_value",euro(c.cpl));
     setText("cph_value", euro(c.cph));
@@ -279,8 +318,12 @@
     setText("funnel_impressions",num(c.impressions));
     setText("funnel_clicks",num(c.clicks));
     setText("funnel_leads",num(c.leads));
-    setText("funnel_appointments",num(c.appointments));
     setText("funnel_hires",num(c.hires));
+    // Conversie statistieken invullen
+    setText("stat_ctr", c.ctr !== null ? c.ctr.toFixed(1) + "%" : "-");
+    setText("stat_ctl", c.ctl !== null ? c.ctl.toFixed(1) + "%" : "-");
+    setText("stat_lth", c.lth !== null ? c.lth.toFixed(1) + "%" : "-");
+    setText("stat_freq", c.frequency !== null ? c.frequency.toFixed(2) : "-");
     setText("preview_body",c.creative_body);
     const img=document.getElementById("preview_image");img.src=c.creative_image;
     const analysisBox = document.getElementById("analysis_content");
