@@ -132,70 +132,42 @@
          <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl border flex-grow flex flex-col">
   <h2 class="text-base font-bold mb-3">Campagne Conversies</h2>
 
-  <div class="space-y-4">
+  <div class="flex justify-around text-center flex-grow items-end">
 
     <!-- CTR -->
-    <div>
-      <div class="flex justify-between text-xs mb-1">
-        <span>CTR</span>
-        <span id="stat_ctr">-</span>
+    <div class="flex flex-col items-center justify-end h-full w-1/5">
+      <div class="flex items-end w-full h-full justify-center gap-1">
+        <div id="col_ctr_actual" class="w-4 bg-indigo-500 rounded-t-sm" style="height:0%"></div>
+        <div id="col_ctr_bench" class="w-4 bg-indigo-200 rounded-t-sm" style="height:0%"></div>
       </div>
-      <div class="flex items-center space-x-2">
-        <div class="flex-1 h-2 bg-sky-100 rounded">
-          <div id="bar_ctr_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
-        </div>
-        <div class="flex-1 h-2 bg-gray-200 rounded">
-          <div id="bar_ctr_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
-        </div>
-      </div>
+      <p class="mt-1.5 text-[10px] uppercase">CTR</p>
     </div>
 
     <!-- CTL -->
-    <div>
-      <div class="flex justify-between text-xs mb-1">
-        <span>CTL</span>
-        <span id="stat_ctl">-</span>
+    <div class="flex flex-col items-center justify-end h-full w-1/5">
+      <div class="flex items-end w-full h-full justify-center gap-1">
+        <div id="col_ctl_actual" class="w-4 bg-indigo-500 rounded-t-sm" style="height:0%"></div>
+        <div id="col_ctl_bench" class="w-4 bg-indigo-200 rounded-t-sm" style="height:0%"></div>
       </div>
-      <div class="flex items-center space-x-2">
-        <div class="flex-1 h-2 bg-sky-100 rounded">
-          <div id="bar_ctl_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
-        </div>
-        <div class="flex-1 h-2 bg-gray-200 rounded">
-          <div id="bar_ctl_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
-        </div>
-      </div>
+      <p class="mt-1.5 text-[10px] uppercase">CTL</p>
     </div>
 
     <!-- LTH -->
-    <div>
-      <div class="flex justify-between text-xs mb-1">
-        <span>LTH</span>
-        <span id="stat_lth">-</span>
+    <div class="flex flex-col items-center justify-end h-full w-1/5">
+      <div class="flex items-end w-full h-full justify-center gap-1">
+        <div id="col_lth_actual" class="w-4 bg-indigo-500 rounded-t-sm" style="height:0%"></div>
+        <div id="col_lth_bench" class="w-4 bg-indigo-200 rounded-t-sm" style="height:0%"></div>
       </div>
-      <div class="flex items-center space-x-2">
-        <div class="flex-1 h-2 bg-sky-100 rounded">
-          <div id="bar_lth_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
-        </div>
-        <div class="flex-1 h-2 bg-gray-200 rounded">
-          <div id="bar_lth_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
-        </div>
-      </div>
+      <p class="mt-1.5 text-[10px] uppercase">LTH</p>
     </div>
 
     <!-- FREQUENTIE -->
-    <div>
-      <div class="flex justify-between text-xs mb-1">
-        <span>FREQUENTIE</span>
-        <span id="stat_freq">-</span>
+    <div class="flex flex-col items-center justify-end h-full w-1/5">
+      <div class="flex items-end w-full h-full justify-center gap-1">
+        <div id="col_freq_actual" class="w-4 bg-indigo-500 rounded-t-sm" style="height:0%"></div>
+        <div id="col_freq_bench" class="w-4 bg-indigo-200 rounded-t-sm" style="height:0%"></div>
       </div>
-      <div class="flex items-center space-x-2">
-        <div class="flex-1 h-2 bg-sky-100 rounded">
-          <div id="bar_freq_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
-        </div>
-        <div class="flex-1 h-2 bg-gray-200 rounded">
-          <div id="bar_freq_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
-        </div>
-      </div>
+      <p class="mt-1.5 text-[10px] uppercase">Frequentie</p>
     </div>
 
   </div>
