@@ -251,6 +251,7 @@
     const c=data[0];
     setText("spend_value",euro(c.spend));
     setText("cpl_value",euro(c.cpl));
+    setText("cph_value", euro(c.cph));
     // Score op basis van CPL
     const scoreEl = document.getElementById("score_value");
     const score = computeScoreColor(c.cpl);
