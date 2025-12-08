@@ -129,44 +129,78 @@
             </div>
           </div>
 
-          <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl border flex-grow flex flex-col">
-           <div class="flex justify-between mb-2">
-            <h2 class="text-base font-bold">Campagne Conversies</h2>
-           </div>
+         <div class="bg-card-light dark:bg-card-dark p-4 rounded-xl border flex-grow flex flex-col">
+  <h2 class="text-base font-bold mb-3">Campagne Conversies</h2>
 
-           <div class="flex justify-around flex-grow items-end text-center">
+  <div class="space-y-4">
 
     <!-- CTR -->
-            <div class="flex flex-col items-center">
-             <p id="stat_ctr" class="text-sm font-bold">-</p>
-             <p class="mt-1.5 text-[10px] uppercase">CTR</p>
-             <p id="ctr_compare" class="text-[10px] text-text-secondary-light">-</p>
-            </div>
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span>CTR</span>
+        <span id="stat_ctr">-</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <div class="flex-1 h-2 bg-sky-100 rounded">
+          <div id="bar_ctr_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
+        </div>
+        <div class="flex-1 h-2 bg-gray-200 rounded">
+          <div id="bar_ctr_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- CTL -->
-            <div class="flex flex-col items-center">
-             <p id="stat_ctl" class="text-sm font-bold">-</p>
-             <p class="mt-1.5 text-[10px] uppercase">CTL</p>
-             <p id="ctl_compare" class="text-[10px] text-text-secondary-light">-</p>
-            </div>
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span>CTL</span>
+        <span id="stat_ctl">-</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <div class="flex-1 h-2 bg-sky-100 rounded">
+          <div id="bar_ctl_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
+        </div>
+        <div class="flex-1 h-2 bg-gray-200 rounded">
+          <div id="bar_ctl_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- LTH -->
-            <div class="flex flex-col items-center">
-             <p id="stat_lth" class="text-sm font-bold">-</p>
-             <p class="mt-1.5 text-[10px] uppercase">LTH</p>
-             <p id="lth_compare" class="text-[10px] text-text-secondary-light">-</p>
-            </div>
-
-    <!-- FREQUENCY -->
-            <div class="flex flex-col items-center">
-             <p id="stat_freq" class="text-sm font-bold">-</p>
-             <p class="mt-1.5 text-[10px] uppercase">Frequentie</p>
-             <p id="freq_compare" class="text-[10px] text-text-secondary-light">-</p>
-            </div>
-
-         </div>
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span>LTH</span>
+        <span id="stat_lth">-</span>
       </div>
+      <div class="flex items-center space-x-2">
+        <div class="flex-1 h-2 bg-sky-100 rounded">
+          <div id="bar_lth_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
+        </div>
+        <div class="flex-1 h-2 bg-gray-200 rounded">
+          <div id="bar_lth_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
+        </div>
       </div>
+    </div>
+
+    <!-- FREQUENTIE -->
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span>FREQUENTIE</span>
+        <span id="stat_freq">-</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <div class="flex-1 h-2 bg-sky-100 rounded">
+          <div id="bar_freq_actual" class="h-2 bg-sky-400 rounded" style="width:0%"></div>
+        </div>
+        <div class="flex-1 h-2 bg-gray-200 rounded">
+          <div id="bar_freq_benchmark" class="h-2 bg-gray-500 rounded" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
         
         <!-- REPLACED MIDDENKOLOM -->
         <div class="lg:col-span-4 flex flex-col gap-4">
