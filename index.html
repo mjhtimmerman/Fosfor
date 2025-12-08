@@ -330,6 +330,12 @@ async function loadCampaignData(id){
       .limit(1);
 
   const c=data[0];
+  // Campagnetrechter vullen
+setText("funnel_impressions", num(c.impressions));
+setText("funnel_clicks", num(c.clicks));
+setText("funnel_leads", num(c.leads));
+setText("funnel_hires", num(c.hires));
+
 
   const benchmarks = await loadBenchmarks(c.category);
 
