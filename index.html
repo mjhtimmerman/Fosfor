@@ -236,7 +236,7 @@ const supabaseClient = createClient(
 
 async function loadBenchmarks(category) {
   const { data } = await supabaseClient
-    .from("category_benchmarks")
+    .from("category_kpi_averages")
     .select("*")
     .eq("category", category)
     .limit(1);
