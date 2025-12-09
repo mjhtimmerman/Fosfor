@@ -275,7 +275,7 @@ function computeScoreColor(cpl) {
     return { text:"-", color:"text-text-secondary-light" };
   }
   const value = parseFloat(cpl);
-  if (value <= 15) return { text:"Goed", color:"text-green-500" };
+  if (value <= 17.5) return { text:"Goed", color:"text-green-500" };
   if (value <= 25) return { text:"Matig", color:"text-orange-500" };
   return { text:"Slecht", color:"text-red-500" };
 }
