@@ -298,12 +298,9 @@ function setColumn(id, value, scale = 10) {
   el.style.height = h + "%";
 }
 
-async function loadActiveCampaigns(){
-  const {data} = await supabaseClient
-    .from("campaigns")
-    .select("*")
-    .gt("daily_budget",0)
-    .eq("status","ACTIVE");
+const { data } = await supabaseClient
+  .from("active_campaigns")
+  .select("*");
 
   const dd=document.getElementById("campaign_dropdown");
   dd.innerHTML="";
