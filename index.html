@@ -374,7 +374,7 @@ setText("funnel_hires", num(c.hires));
   setColumn("col_freq_bench", benchmarks?.avg_frequency, 20);
 
   setText("preview_body", c.creative_body);
-  document.getElementById("preview_image").src = c.creative_image;
+  document.getElementById("preview_image").src = c.image_url || "https://via.placeholder.com/400";
 
   const analysisBox=document.getElementById("analysis_content");
   analysisBox.innerText = c.ai_analyse || "Analyse wordt geladen...";
@@ -383,4 +383,3 @@ setText("funnel_hires", num(c.hires));
 // ← DIT STAAT NU EINDLIJK BUITEN ALLE FUNCTIES
 loadActiveCampaigns();
 </script>
-
