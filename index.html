@@ -381,6 +381,9 @@ setText("funnel_hires", num(c.hires));
 
   const analysisBox=document.getElementById("analysis_content");
   analysisBox.innerText = c.ai_analyse || "Analyse wordt geladen...";
+
+  const actionBox=document.getElementById("action_content");
+  actionBox.innerText = c.ai_actie || "Geen actie beschikbaar.";
 }
 
 // ← DIT STAAT NU EINDLIJK BUITEN ALLE FUNCTIES
