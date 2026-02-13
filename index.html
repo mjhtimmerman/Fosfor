@@ -25,25 +25,26 @@
   <style>
     html, body { height: 100%; }
     body { background: #fff; } /* geen dots */
-    /* voorkomt “checkerboard” rond cirkels door subpixel/antialias op sommige displays */
     .solid-dot { background-clip: padding-box; }
   </style>
 </head>
 
 <body class="font-display text-text h-screen overflow-hidden">
-  <div class="h-full w-full flex items-center justify-center px-10">
-    <div class="w-full max-w-[1400px]">
+  <!-- Page wrapper: NIET centreren, maar linksboven anker -->
+  <div class="h-full w-full relative">
 
-      <!-- Header linksboven -->
-      <div class="flex items-center gap-6">
-        <div class="w-20 h-20 rounded-full border-[4px] border-black bg-white flex items-center justify-center overflow-hidden">
-          <img src="./fosfor-logo.png" alt="Fosfor" class="w-16 h-16 object-contain" onerror="this.style.display='none'">
-        </div>
-        <h1 class="text-[clamp(44px,5vw,72px)] font-medium tracking-tight leading-none">Fosfor Targets</h1>
+    <!-- Header: linksboven vast -->
+    <div class="absolute left-10 top-10 flex items-center gap-6">
+      <!-- Logo container: GEEN border, anders krijg je “extra ring” als PNG al cirkel heeft -->
+      <div class="w-20 h-20 bg-white flex items-center justify-center overflow-hidden">
+        <img src="./fosfor-logo.png" alt="Fosfor" class="w-20 h-20 object-contain" onerror="this.style.display='none'">
       </div>
+      <h1 class="text-[clamp(44px,5vw,72px)] font-medium tracking-tight leading-none">Fosfor Targets</h1>
+    </div>
 
-      <!-- Content -->
-      <div class="mt-10 grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
+    <!-- Main content: onder header, nog steeds binnen 1 scherm -->
+    <div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10">
+      <div class="h-full w-full grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
 
         <!-- Leads -->
         <div class="text-center">
@@ -54,9 +55,7 @@
             <div id="dot_leads" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
           </div>
 
-          <div id="leads_sub" class="mt-8 text-sm text-text leading-snug min-h-[44px]">
-            <!-- optioneel: tekst komt uit JS -->
-          </div>
+          <div id="leads_sub" class="mt-8 text-sm text-text leading-snug min-h-[44px]"></div>
         </div>
 
         <!-- Deals -->
@@ -84,25 +83,31 @@
         </div>
 
       </div>
-
-      <!-- Footer links onderin -->
-      <div class="fixed left-6 bottom-4 text-xs text-mut">
-        <span id="meta_month">Maand: -</span>
-        <span> • </span>
-        <span id="meta_updated">Update: -</span>
-      </div>
-
     </div>
+
+    <!-- Footer links onderin -->
+    <div class="absolute left-10 bottom-6 text-xs text-mut">
+      <span id="meta_month">Maand: -</span>
+      <span> • </span>
+      <span id="meta_updated">Update: -</span>
+    </div>
+
   </div>
 
 <script>
-  // ✅ jouw CSV-link (werkt bij jou nu)
+  // CSV link (jouw werkende link)
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkMJ9uMSSZlXU2Cyrr7GS7HW5lubQANE2_gycg9AJJhL9eTFjn0wBJCn1yGfcvRNoyWerYFvr3s6hr/pub?gid=425498216&single=true&output=csv";
-
   const REFRESH_MS = 60_000;
 
-  // Targets aanpassen (maandtargets)
-  const TARGETS = { leads: 100, deals: 8, hires: 4 };
+  /**
+   * Moving targets:
+   * - November = max (100%)
+   * - Januari = 10% van max
+   * - Elke maand +10%-punt totdat max bereikt is in november
+   */
+  const MAX_TARGETS = { leads: 500, deals: 80, hires: 100 }; // november
+  const START_MONTH = 1;  // januari
+  const CAP_MONTH = 11;   // november
 
   const $ = (id) => document.getElementById(id);
   const setText = (id, v) => { const el = $(id); if (el) el.textContent = v; };
@@ -128,7 +133,7 @@
     };
 
     return {
-      date: get("date"),
+      date: get("date"),   // verwacht: "2026-02"
       leads: get("leads"),
       deals: get("deals"),
       hires: get("hires"),
@@ -140,8 +145,31 @@
     return Number.isFinite(n) ? n : 0;
   }
 
+  function monthFromYYYYMM(s) {
+    // "2026-02" -> 2
+    const m = String(s || "").trim().match(/^\d{4}-(\d{2})$/);
+    if (!m) return null;
+    return Number(m[1]);
+  }
+
+  function computeTargetsForMonth(monthNum) {
+    // factor: Jan=0.1, Feb=0.2, ..., Nov=1.0, daarna cap op 1.0
+    if (!monthNum) monthNum = START_MONTH;
+
+    const steps = CAP_MONTH - START_MONTH; // 10
+    const idx = Math.max(0, Math.min(steps, monthNum - START_MONTH)); // 0..10
+    const factor = 0.1 + (idx * 0.1); // 0.1 .. 1.0
+
+    return {
+      factor,
+      leads: Math.round(MAX_TARGETS.leads * factor),
+      deals: Math.round(MAX_TARGETS.deals * factor),
+      hires: Math.round(MAX_TARGETS.hires * factor),
+    };
+  }
+
   function dotClass(actual, target) {
-    if (!target || target <= 0) return "bg-amber-500";
+    if (!target || target <= 0) return "bg-orange-500";
     const pct = actual / target;
     if (pct < 0.60) return "bg-red-600";
     if (pct < 0.80) return "bg-orange-500";
@@ -151,7 +179,8 @@
   function remainingText(actual, target, label) {
     if (!target || target <= 0) return "";
     const remaining = Math.max(0, Math.ceil(target - actual));
-    if (remaining === 0) return `Target gehaald voor ${label}.`;
+    if (remaining === 0) return `Target gehaald.`;
+    // korte variant, past op 1 scherm
     return `Nog ${remaining} te behalen om op target te komen.`;
   }
 
@@ -171,23 +200,25 @@
       const deals = toNum(data.deals);
       const hires = toNum(data.hires);
 
+      const monthNum = monthFromYYYYMM(data.date);
+      const targets = computeTargetsForMonth(monthNum);
+
       setText("leads", String(leads));
       setText("deals", String(deals));
       setText("hires", String(hires));
 
-      $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, TARGETS.leads)}`;
-      $("dot_deals").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(deals, TARGETS.deals)}`;
-      $("dot_hires").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(hires, TARGETS.hires)}`;
+      $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, targets.leads)}`;
+      $("dot_deals").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(deals, targets.deals)}`;
+      $("dot_hires").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(hires, targets.hires)}`;
 
-      setText("leads_sub", remainingText(leads, TARGETS.leads, "leads"));
-      setText("deals_sub", remainingText(deals, TARGETS.deals, "deals"));
-      setText("hires_sub", remainingText(hires, TARGETS.hires, "hires"));
+      setText("leads_sub", remainingText(leads, targets.leads, "leads"));
+      setText("deals_sub", remainingText(deals, targets.deals, "deals"));
+      setText("hires_sub", remainingText(hires, targets.hires, "hires"));
 
-      setText("meta_month", `Maand: ${data.date}`);
+      setText("meta_month", `Maand: ${data.date} (targets ${Math.round(targets.factor*100)}%)`);
       setText("meta_updated", `Update: ${new Date().toLocaleString("nl-NL")}`);
 
     } catch (e) {
-      // bij fout: laat cijfers staan en zet footer naar foutmelding
       setText("meta_month", "Maand: -");
       setText("meta_updated", `Fout: ${e.message || e}`);
     }
