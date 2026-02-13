@@ -38,7 +38,8 @@
     </div>
 
     <!-- Main -->
-    <div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10">
+<div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10 flex items-center justify-center">
+  <div class="w-full max-w-[1400px]">
       <div class="h-full w-full grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
 
         <div class="text-center">
@@ -70,6 +71,7 @@
 
       </div>
     </div>
+</div>
 
     <!-- Footer -->
     <div class="absolute left-10 bottom-6 text-xs text-mut">
@@ -210,7 +212,7 @@
       setText("deals_sub", remainingText(deals, wTargets.deals, "deals"));
       setText("hires_sub", remainingText(hires, wTargets.hires, "hires"));
 
-      setText("meta_month", `Maand: ${data.date} (targets ${Math.round(targets.factor * 100)}%)`);
+      setText("meta_month", `Maand: ${data.date}`);
       setText("meta_updated", `Update: ${new Date().toLocaleString("nl-NL")}`);
     } catch(e){
       setText("meta_month", "Maand: -");
