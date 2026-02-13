@@ -13,10 +13,7 @@
       theme: {
         extend: {
           fontFamily: { display: ["Sora", "sans-serif"] },
-          colors: {
-            text: "#0F172A",
-            mut: "#64748B",
-          }
+          colors: { text: "#0F172A", mut: "#64748B" }
         }
       }
     }
@@ -24,68 +21,57 @@
 
   <style>
     html, body { height: 100%; }
-    body { background: #fff; } /* geen dots */
+    body { background: #fff; }
     .solid-dot { background-clip: padding-box; }
   </style>
 </head>
 
 <body class="font-display text-text h-screen overflow-hidden">
-  <!-- Page wrapper: NIET centreren, maar linksboven anker -->
   <div class="h-full w-full relative">
 
-    <!-- Header: linksboven vast -->
+    <!-- Header -->
     <div class="absolute left-10 top-10 flex items-center gap-6">
-      <!-- Logo container: GEEN border, anders krijg je “extra ring” als PNG al cirkel heeft -->
       <div class="w-20 h-20 bg-white flex items-center justify-center overflow-hidden">
         <img src="./fosfor-logo.png" alt="Fosfor" class="w-20 h-20 object-contain" onerror="this.style.display='none'">
       </div>
       <h1 class="text-[clamp(44px,5vw,72px)] font-medium tracking-tight leading-none">Fosfor Targets</h1>
     </div>
 
-    <!-- Main content: onder header, nog steeds binnen 1 scherm -->
+    <!-- Main -->
     <div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10">
       <div class="h-full w-full grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
 
-        <!-- Leads -->
         <div class="text-center">
           <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Leads</div>
-
           <div class="flex items-center justify-center gap-10">
-            <div id="leads" class="text-[clamp(34px,4vw,56px)] font-normal w-20 text-left">-</div>
+            <div id="leads" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
             <div id="dot_leads" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
           </div>
-
-          <div id="leads_sub" class="mt-8 text-sm text-text leading-snug min-h-[44px]"></div>
+          <div id="leads_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
         </div>
 
-        <!-- Deals -->
         <div class="text-center">
           <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Deals</div>
-
           <div class="flex items-center justify-center gap-10">
-            <div id="deals" class="text-[clamp(34px,4vw,56px)] font-normal w-20 text-left">-</div>
+            <div id="deals" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
             <div id="dot_deals" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
           </div>
-
-          <div id="deals_sub" class="mt-8 text-sm text-text leading-snug min-h-[44px]"></div>
+          <div id="deals_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
         </div>
 
-        <!-- Hires -->
         <div class="text-center">
           <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Hires</div>
-
           <div class="flex items-center justify-center gap-10">
-            <div id="hires" class="text-[clamp(34px,4vw,56px)] font-normal w-20 text-left">-</div>
+            <div id="hires" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
             <div id="dot_hires" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
           </div>
-
-          <div id="hires_sub" class="mt-8 text-sm text-text leading-snug min-h-[44px]"></div>
+          <div id="hires_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
         </div>
 
       </div>
     </div>
 
-    <!-- Footer links onderin -->
+    <!-- Footer -->
     <div class="absolute left-10 bottom-6 text-xs text-mut">
       <span id="meta_month">Maand: -</span>
       <span> • </span>
@@ -95,26 +81,21 @@
   </div>
 
 <script>
-  // CSV link (jouw werkende link)
+  // ✅ vervang door je 100% werkende CSV link uit de browser
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkMJ9uMSSZlXU2Cyrr7GS7HW5lubQANE2_gycg9AJJhL9eTFjn0wBJCn1yGfcvRNoyWerYFvr3s6hr/pub?gid=425498216&single=true&output=csv";
   const REFRESH_MS = 60_000;
 
-  /**
-   * Moving targets:
-   * - November = max (100%)
-   * - Januari = 10% van max
-   * - Elke maand +10%-punt totdat max bereikt is in november
-   */
-  const MAX_TARGETS = { leads: 500, deals: 80, hires: 100 }; // november
-  const START_MONTH = 1;  // januari
-  const CAP_MONTH = 11;   // november
+  // Moving targets: November max, Jan = 10% van max, elke maand +10%-punt
+  const MAX_TARGETS = { leads: 500, deals: 80, hires: 100 };
+  const START_MONTH = 1;
+  const CAP_MONTH = 11;
 
   const $ = (id) => document.getElementById(id);
   const setText = (id, v) => { const el = $(id); if (el) el.textContent = v; };
 
-  function stripBOM(s) { return s.replace(/^\uFEFF/, ""); }
+  function stripBOM(s){ return s.replace(/^\uFEFF/, ""); }
 
-  function parseCSV(text) {
+  function parseCSV(text){
     const clean = stripBOM(text).trim();
     const lines = clean.split(/\r?\n/).filter(Boolean);
     if (lines.length < 2) throw new Error("CSV bevat geen data-rij.");
@@ -132,33 +113,25 @@
       return row[i];
     };
 
-    return {
-      date: get("date"),   // verwacht: "2026-02"
-      leads: get("leads"),
-      deals: get("deals"),
-      hires: get("hires"),
-    };
+    return { date: get("date"), leads: get("leads"), deals: get("deals"), hires: get("hires") };
   }
 
-  function toNum(v) {
+  function toNum(v){
     const n = Number(String(v).replace(",", "."));
     return Number.isFinite(n) ? n : 0;
   }
 
-  function monthFromYYYYMM(s) {
-    // "2026-02" -> 2
+  function monthFromYYYYMM(s){
     const m = String(s || "").trim().match(/^\d{4}-(\d{2})$/);
     if (!m) return null;
     return Number(m[1]);
   }
 
-  function computeTargetsForMonth(monthNum) {
-    // factor: Jan=0.1, Feb=0.2, ..., Nov=1.0, daarna cap op 1.0
+  function computeTargetsForMonth(monthNum){
     if (!monthNum) monthNum = START_MONTH;
-
     const steps = CAP_MONTH - START_MONTH; // 10
     const idx = Math.max(0, Math.min(steps, monthNum - START_MONTH)); // 0..10
-    const factor = 0.1 + (idx * 0.1); // 0.1 .. 1.0
+    const factor = 0.1 + (idx * 0.1); // 0.1..1.0
 
     return {
       factor,
@@ -168,7 +141,7 @@
     };
   }
 
-  function dotClass(actual, target) {
+  function dotClass(actual, target){
     if (!target || target <= 0) return "bg-orange-500";
     const pct = actual / target;
     if (pct < 0.60) return "bg-red-600";
@@ -176,16 +149,32 @@
     return "bg-emerald-600";
   }
 
-  function remainingText(actual, target, label) {
-    if (!target || target <= 0) return "";
-    const remaining = Math.max(0, Math.ceil(target - actual));
-    if (remaining === 0) return `Target gehaald.`;
-    // korte variant, past op 1 scherm
-    return `Nog ${remaining} te behalen om op target te komen.`;
+  // Progress binnen maand op basis van dagen
+  function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0); }
+  function endOfMonth(d){ return new Date(d.getFullYear(), d.getMonth() + 1, 1, 0, 0, 0); }
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+  function monthProgress(now = new Date()){
+    const s = startOfMonth(now).getTime();
+    const e = endOfMonth(now).getTime();
+    const t = now.getTime();
+    return clamp01((t - s) / (e - s));
   }
 
-  async function load() {
-    try {
+  function weekTargetFromMonthTarget(monthTarget, now = new Date()){
+    const p = monthProgress(now);
+    return Math.max(0, Math.round(monthTarget * p));
+  }
+
+  function remainingText(actual, weekTarget, label){
+    if (!weekTarget || weekTarget <= 0) return "";
+    const remaining = Math.max(0, Math.ceil(weekTarget - actual));
+    if (remaining === 0) return `Op weektarget voor ${label}.`;
+    return `Nog ${remaining} te behalen om op weektarget te komen.`;
+  }
+
+  async function load(){
+    try{
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 8000);
 
@@ -203,22 +192,27 @@
       const monthNum = monthFromYYYYMM(data.date);
       const targets = computeTargetsForMonth(monthNum);
 
+      const wTargets = {
+        leads: weekTargetFromMonthTarget(targets.leads),
+        deals: weekTargetFromMonthTarget(targets.deals),
+        hires: weekTargetFromMonthTarget(targets.hires),
+      };
+
       setText("leads", String(leads));
       setText("deals", String(deals));
       setText("hires", String(hires));
 
-      $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, targets.leads)}`;
-      $("dot_deals").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(deals, targets.deals)}`;
-      $("dot_hires").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(hires, targets.hires)}`;
+      $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, wTargets.leads)}`;
+      $("dot_deals").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(deals, wTargets.deals)}`;
+      $("dot_hires").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(hires, wTargets.hires)}`;
 
-      setText("leads_sub", remainingText(leads, targets.leads, "leads"));
-      setText("deals_sub", remainingText(deals, targets.deals, "deals"));
-      setText("hires_sub", remainingText(hires, targets.hires, "hires"));
+      setText("leads_sub", remainingText(leads, wTargets.leads, "leads"));
+      setText("deals_sub", remainingText(deals, wTargets.deals, "deals"));
+      setText("hires_sub", remainingText(hires, wTargets.hires, "hires"));
 
-      setText("meta_month", `Maand: ${data.date} (targets ${Math.round(targets.factor*100)}%)`);
+      setText("meta_month", `Maand: ${data.date} (targets ${Math.round(targets.factor * 100)}%)`);
       setText("meta_updated", `Update: ${new Date().toLocaleString("nl-NL")}`);
-
-    } catch (e) {
+    } catch(e){
       setText("meta_month", "Maand: -");
       setText("meta_updated", `Fout: ${e.message || e}`);
     }
