@@ -1,3 +1,87 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fosfor Targets</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { display: ["Sora", "sans-serif"] },
+          colors: { text: "#0F172A", mut: "#64748B" }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body { height: 100%; }
+    body { background: #fff; }
+    .solid-dot { background-clip: padding-box; }
+  </style>
+</head>
+
+<body class="font-display text-text h-screen overflow-hidden">
+  <div class="h-full w-full relative">
+
+    <!-- Header -->
+    <div class="absolute left-10 top-10 flex items-center gap-6">
+      <div class="w-20 h-20 bg-white flex items-center justify-center overflow-hidden">
+        <img src="./fosfor-logo.png" alt="Fosfor" class="w-20 h-20 object-contain" onerror="this.style.display='none'">
+      </div>
+      <h1 class="text-[clamp(44px,5vw,72px)] font-medium tracking-tight leading-none">Fosfor Targets</h1>
+    </div>
+
+    <!-- Main -->
+<div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10 flex items-center justify-center">
+  <div class="w-full max-w-[1400px]">
+      <div class="h-full w-full grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
+
+        <div class="text-center">
+          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Leads</div>
+          <div class="flex items-center justify-center gap-10">
+            <div id="leads" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
+            <div id="dot_leads" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
+          </div>
+          <div id="leads_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Deals</div>
+          <div class="flex items-center justify-center gap-10">
+            <div id="deals" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
+            <div id="dot_deals" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
+          </div>
+          <div id="deals_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Hires</div>
+          <div class="flex items-center justify-center gap-10">
+            <div id="hires" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
+            <div id="dot_hires" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
+          </div>
+          <div id="hires_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
+        </div>
+
+      </div>
+    </div>
+</div>
+
+    <!-- Footer -->
+    <div class="absolute left-10 bottom-6 text-xs text-mut">
+      <span id="meta_month">Maand: -</span>
+      <span> • </span>
+      <span id="meta_updated">Update: -</span>
+    </div>
+
+  </div>
+
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkMJ9uMSSZlXU2Cyrr7GS7HW5lubQANE2_gycg9AJJhL9eTFjn0wBJCn1yGfcvRNoyWerYFvr3s6hr/pub?gid=425498216&single=true&output=csv";
   const TARGETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkMJ9uMSSZlXU2Cyrr7GS7HW5lubQANE2_gycg9AJJhL9eTFjn0wBJCn1yGfcvRNoyWerYFvr3s6hr/pub?gid=1397330974&single=true&output=csv";
