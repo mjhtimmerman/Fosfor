@@ -1,148 +1,79 @@
-<!doctype html>
-<html lang="nl">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fosfor Targets</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { display: ["Sora", "sans-serif"] },
-          colors: { text: "#0F172A", mut: "#64748B" }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    html, body { height: 100%; }
-    body { background: #fff; }
-    .solid-dot { background-clip: padding-box; }
-  </style>
-</head>
-
-<body class="font-display text-text h-screen overflow-hidden">
-  <div class="h-full w-full relative">
-
-    <!-- Header -->
-    <div class="absolute left-10 top-10 flex items-center gap-6">
-      <div class="w-20 h-20 bg-white flex items-center justify-center overflow-hidden">
-        <img src="./fosfor-logo.png" alt="Fosfor" class="w-20 h-20 object-contain" onerror="this.style.display='none'">
-      </div>
-      <h1 class="text-[clamp(44px,5vw,72px)] font-medium tracking-tight leading-none">Fosfor Targets</h1>
-    </div>
-
-    <!-- Main -->
-<div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10 flex items-center justify-center">
-  <div class="w-full max-w-[1400px]">
-      <div class="h-full w-full grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
-
-        <div class="text-center">
-          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Leads</div>
-          <div class="flex items-center justify-center gap-10">
-            <div id="leads" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
-            <div id="dot_leads" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
-          </div>
-          <div id="leads_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
-        </div>
-
-        <div class="text-center">
-          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Deals</div>
-          <div class="flex items-center justify-center gap-10">
-            <div id="deals" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
-            <div id="dot_deals" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
-          </div>
-          <div id="deals_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
-        </div>
-
-        <div class="text-center">
-          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Hires</div>
-          <div class="flex items-center justify-center gap-10">
-            <div id="hires" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
-            <div id="dot_hires" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
-          </div>
-          <div id="hires_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
-        </div>
-
-      </div>
-    </div>
-</div>
-
-    <!-- Footer -->
-    <div class="absolute left-10 bottom-6 text-xs text-mut">
-      <span id="meta_month">Maand: -</span>
-      <span> • </span>
-      <span id="meta_updated">Update: -</span>
-    </div>
-
-  </div>
-
 <script>
-  // ✅ vervang door je 100% werkende CSV link uit de browser
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkMJ9uMSSZlXU2Cyrr7GS7HW5lubQANE2_gycg9AJJhL9eTFjn0wBJCn1yGfcvRNoyWerYFvr3s6hr/pub?gid=425498216&single=true&output=csv";
+  const TARGETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkMJ9uMSSZlXU2Cyrr7GS7HW5lubQANE2_gycg9AJJhL9eTFjn0wBJCn1yGfcvRNoyWerYFvr3s6hr/pub?gid=1397330974&single=true&output=csv";
   const REFRESH_MS = 60_000;
-
-  // Moving targets: November max, Jan = 10% van max, elke maand +10%-punt
-  const MAX_TARGETS = { leads: 500, deals: 80, hires: 100 };
-  const START_MONTH = 1;
-  const CAP_MONTH = 11;
 
   const $ = (id) => document.getElementById(id);
   const setText = (id, v) => { const el = $(id); if (el) el.textContent = v; };
 
   function stripBOM(s){ return s.replace(/^\uFEFF/, ""); }
 
-  function parseCSV(text){
+  function toNum(v){
+    const n = Number(String(v ?? "").trim().replace(",", "."));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  // ---------- CSV parsing ----------
+  function parseCurrentCSV(text){
     const clean = stripBOM(text).trim();
     const lines = clean.split(/\r?\n/).filter(Boolean);
-    if (lines.length < 2) throw new Error("CSV bevat geen data-rij.");
+    if (lines.length < 2) throw new Error("Currents CSV bevat geen data-rij.");
 
     const delim = (lines[0].includes(";") && !lines[0].includes(",")) ? ";" : ",";
     const splitLine = (line) => line.split(delim).map(x => x.trim().replace(/^"|"$/g, ""));
 
     const headers = splitLine(lines[0]).map(h => h.toLowerCase());
-    const row = splitLine(lines[1]);
+    const row = splitLine(lines[1]); // jij gebruikt bewust de eerste data-rij (currents)
 
     const idx = (name) => headers.indexOf(name.toLowerCase());
     const get = (name) => {
       const i = idx(name);
-      if (i === -1) throw new Error(`Kolom '${name}' niet gevonden.`);
-      return row[i];
+      if (i === -1) throw new Error(`Currents kolom '${name}' niet gevonden.`);
+      return row[i] ?? "";
     };
-
-    return { date: get("date"), leads: get("leads"), deals: get("deals"), hires: get("hires") };
-  }
-
-  function toNum(v){
-    const n = Number(String(v).replace(",", "."));
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  function monthFromYYYYMM(s){
-    const m = String(s || "").trim().match(/^\d{4}-(\d{2})$/);
-    if (!m) return null;
-    return Number(m[1]);
-  }
-
-  function computeTargetsForMonth(monthNum){
-    if (!monthNum) monthNum = START_MONTH;
-    const steps = CAP_MONTH - START_MONTH; // 10
-    const idx = Math.max(0, Math.min(steps, monthNum - START_MONTH)); // 0..10
-    const factor = 0.1 + (idx * 0.1); // 0.1..1.0
 
     return {
-      factor,
-      leads: Math.round(MAX_TARGETS.leads * factor),
-      deals: Math.round(MAX_TARGETS.deals * factor),
-      hires: Math.round(MAX_TARGETS.hires * factor),
+      date: String(get("date")).trim(),
+      leads: get("leads"),
+      deals: get("deals"),
+      hires: get("hires"),
     };
   }
 
+  function parseTargetsCSV(text){
+    const clean = stripBOM(text).trim();
+    const lines = clean.split(/\r?\n/).filter(Boolean);
+    if (lines.length < 2) throw new Error("Targets CSV bevat geen data-rijen.");
+
+    const delim = (lines[0].includes(";") && !lines[0].includes(",")) ? ";" : ",";
+    const splitLine = (line) => line.split(delim).map(x => x.trim().replace(/^"|"$/g, ""));
+
+    const headers = splitLine(lines[0]).map(h => h.toLowerCase());
+    const idx = (name) => headers.indexOf(name.toLowerCase());
+
+    const getCell = (row, name) => {
+      const i = idx(name);
+      if (i === -1) throw new Error(`Targets kolom '${name}' niet gevonden.`);
+      return row[i] ?? "";
+    };
+
+    // map: { "2026-02": {leads_target: 100, deals_target: 16, hires_target: 20}, ... }
+    const map = {};
+    for (let r = 1; r < lines.length; r++){
+      const row = splitLine(lines[r]);
+      const month = String(getCell(row, "month")).trim();
+      if (!month) continue;
+
+      map[month] = {
+        leads_target: toNum(getCell(row, "leads_target")),
+        deals_target: toNum(getCell(row, "deals_target")),
+        hires_target: toNum(getCell(row, "hires_target")),
+      };
+    }
+    return map;
+  }
+
+  // ---------- Logic ----------
   function dotClass(actual, target){
     if (!target || target <= 0) return "bg-orange-500";
     const pct = actual / target;
@@ -175,29 +106,41 @@
     return `Nog ${remaining} te behalen om op weektarget te komen.`;
   }
 
+  async function fetchText(url, ctrl){
+    const res = await fetch(url, { cache: "no-store", signal: ctrl.signal });
+    if (!res.ok) throw new Error(`Fetch faalt (${res.status}) voor ${url}`);
+    return await res.text();
+  }
+
   async function load(){
     try{
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 8000);
 
-      const res = await fetch(CSV_URL, { cache: "no-store", signal: ctrl.signal });
-      clearTimeout(t);
-      if (!res.ok) throw new Error(`Fetch faalt (${res.status}).`);
+      // parallel fetchen
+      const [currText, targText] = await Promise.all([
+        fetchText(CSV_URL, ctrl),
+        fetchText(TARGETS_CSV_URL, ctrl),
+      ]);
 
-      const text = await res.text();
-      const data = parseCSV(text);
+      clearTimeout(t);
+
+      const data = parseCurrentCSV(currText);
+      const targetsMap = parseTargetsCSV(targText);
+
+      const monthKey = String(data.date || "").trim();
+      const monthTargets = targetsMap[monthKey];
+      if (!monthTargets) throw new Error(`Geen targets gevonden voor maand '${monthKey}'.`);
 
       const leads = toNum(data.leads);
       const deals = toNum(data.deals);
       const hires = toNum(data.hires);
 
-      const monthNum = monthFromYYYYMM(data.date);
-      const targets = computeTargetsForMonth(monthNum);
-
+      // weektarget = maandtarget * maand-progress
       const wTargets = {
-        leads: weekTargetFromMonthTarget(targets.leads),
-        deals: weekTargetFromMonthTarget(targets.deals),
-        hires: weekTargetFromMonthTarget(targets.hires),
+        leads: weekTargetFromMonthTarget(monthTargets.leads_target),
+        deals: weekTargetFromMonthTarget(monthTargets.deals_target),
+        hires: weekTargetFromMonthTarget(monthTargets.hires_target),
       };
 
       setText("leads", String(leads));
@@ -212,7 +155,7 @@
       setText("deals_sub", remainingText(deals, wTargets.deals, "deals"));
       setText("hires_sub", remainingText(hires, wTargets.hires, "hires"));
 
-      setText("meta_month", `Maand: ${data.date}`);
+      setText("meta_month", `Maand: ${monthKey}`);
       setText("meta_updated", `Update: ${new Date().toLocaleString("nl-NL")}`);
     } catch(e){
       setText("meta_month", "Maand: -");
@@ -223,5 +166,3 @@
   load();
   setInterval(load, REFRESH_MS);
 </script>
-</body>
-</html>
