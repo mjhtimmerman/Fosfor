@@ -40,7 +40,7 @@
     <!-- Main -->
 <div class="absolute left-0 right-0 top-[160px] bottom-[70px] px-10 flex items-center justify-center">
   <div class="w-full max-w-[1400px]">
-      <div class="h-full w-full grid grid-cols-3 gap-[clamp(32px,5vw,96px)] items-start">
+      <div class="h-full w-full grid grid-cols-4 gap-[clamp(32px,5vw,96px)] items-start">
 
         <div class="text-center">
           <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Leads</div>
@@ -51,6 +51,15 @@
           <div id="leads_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
         </div>
 
+        <div class="text-center">
+          <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Appointments</div>
+          <div class="flex items-center justify-center gap-10">
+            <div id="appointments" class="text-[clamp(34px,4vw,56px)] w-20 text-left">-</div>
+            <div id="dot_appointments" class="solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full bg-red-600"></div>
+          </div>
+          <div id="appointments_sub" class="mt-8 text-sm leading-snug min-h-[44px]"></div>
+        </div>
+        
         <div class="text-center">
           <div class="text-[clamp(38px,4.2vw,60px)] font-medium mb-6">Deals</div>
           <div class="flex items-center justify-center gap-10">
@@ -119,6 +128,7 @@
     return {
       date: String(get("date")).trim(),
       leads: get("leads"),
+      appointments: get("appointments"),
       deals: get("deals"),
       hires: get("hires"),
     };
@@ -150,6 +160,7 @@
 
       map[month] = {
         leads_target: toNum(getCell(row, "leads_target")),
+        appointments_target: toNum(getCell(row, "appointments_target")),
         deals_target: toNum(getCell(row, "deals_target")),
         hires_target: toNum(getCell(row, "hires_target")),
       };
@@ -217,25 +228,30 @@
       if (!monthTargets) throw new Error(`Geen targets gevonden voor maand '${monthKey}'.`);
 
       const leads = toNum(data.leads);
+      const appointments = toNum(data.appointments);
       const deals = toNum(data.deals);
       const hires = toNum(data.hires);
 
       // weektarget = maandtarget * maand-progress
       const wTargets = {
         leads: weekTargetFromMonthTarget(monthTargets.leads_target),
+        appointments: weekTargetFromMonthTarget(monthTargets.appointments_target),
         deals: weekTargetFromMonthTarget(monthTargets.deals_target),
         hires: weekTargetFromMonthTarget(monthTargets.hires_target),
       };
 
       setText("leads", String(leads));
+      setText("appointments", String(appointments));
       setText("deals", String(deals));
       setText("hires", String(hires));
 
       $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, wTargets.leads)}`;
+      $("dot_appointments").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(appointments, wTargets.appointments)}`;
       $("dot_deals").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(deals, wTargets.deals)}`;
       $("dot_hires").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(hires, wTargets.hires)}`;
 
       setText("leads_sub", remainingText(leads, wTargets.leads, "leads"));
+      setText("appointments_sub", remainingText(appointments, wTargets.appointments, "appointments"));
       setText("deals_sub", remainingText(deals, wTargets.deals, "deals"));
       setText("hires_sub", remainingText(hires, wTargets.hires, "hires"));
 
