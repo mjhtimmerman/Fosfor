@@ -188,9 +188,29 @@
     const t = now.getTime();
     return clamp01((t - s) / (e - s));
   }
+  
+  function startOfWeekMonday(d){
+    const x = new Date(d);
+    const day = (x.getDay() + 6) % 7; // ma=0 ... zo=6
+    x.setDate(x.getDate() - day);
+    x.setHours(0,0,0,0);
+    return x;
+  }
+
+  function isLastWeekOfMonth(now = new Date()){
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0); // laatste dag van maand
+    const thisWeekStart = startOfWeekMonday(now).getTime();
+    const lastWeekStart = startOfWeekMonday(lastDay).getTime();
+    return thisWeekStart === lastWeekStart;
+  }
 
   function weekTargetFromMonthTarget(monthTarget, now = new Date()){
-    const p = monthProgress(now);
+    if (!monthTarget || monthTarget <= 0) return 0;
+
+    // laatste week => target = maandtarget
+    if (isLastWeekOfMonth(now)) return Math.round(monthTarget);
+
+    const p = monthProgress(now); // je bestaande dag-progress
     return Math.max(0, Math.round(monthTarget * p));
   }
 
@@ -208,10 +228,10 @@
   }
 
   async function load(){
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    
     try{
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 8000);
-
       // parallel fetchen
       const [currText, targText] = await Promise.all([
         fetchText(CSV_URL, ctrl),
@@ -240,10 +260,10 @@
         hires: weekTargetFromMonthTarget(monthTargets.hires_target),
       };
 
-      setText("leads", String(leads));
-      setText("appointments", String(appointments));
-      setText("deals", String(deals));
-      setText("hires", String(hires));
+      setText("leads", `${leads}/${Math.round(monthTargets.leads_target)}`);
+      setText("appointments", `${appointments}/${Math.round(monthTargets.appointments_target)}`);
+      setText("deals", `${deals}/${Math.round(monthTargets.deals_target)}`);
+      setText("hires", `${hires}/${Math.round(monthTargets.hires_target)}`);
 
       $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, wTargets.leads)}`;
       $("dot_appointments").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(appointments, wTargets.appointments)}`;
@@ -261,8 +281,10 @@
       setText("meta_month", "Maand: -");
       setText("meta_updated", `Fout: ${e.message || e}`);
     }
+      finally {
+      clearTimeout(t);
+    }
   }
-
   load();
   setInterval(load, REFRESH_MS);
 </script>
