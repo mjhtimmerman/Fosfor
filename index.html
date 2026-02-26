@@ -171,13 +171,13 @@
   }
 
   // ---------- Logic ----------
-  function dotClass(actual, target){
-    if (!target || target <= 0) return "bg-orange-500";
+  function dotColor(actual, target){
+    if (!target || target <= 0) return "#F97316"; // orange
     const pct = actual / target;
-    if (pct < 0.60) return "bg-red-600";
-    if (pct < 0.80) return "bg-orange-500";
-    return "bg-emerald-600";
-  }
+    if (pct < 0.60) return "#DC2626"; // red
+    if (pct < 0.80) return "#F97316"; // orange
+    return "#059669"; // green
+}
 
   // Progress binnen maand op basis van dagen
   function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0); }
@@ -265,10 +265,10 @@
       setText("deals", `${deals}/${Math.round(monthTargets.deals_target)}`);
       setText("hires", `${hires}/${Math.round(monthTargets.hires_target)}`);
 
-      $("dot_leads").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(leads, wTargets.leads)}`;
-      $("dot_appointments").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(appointments, wTargets.appointments)}`;
-      $("dot_deals").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(deals, wTargets.deals)}`;
-      $("dot_hires").className = `solid-dot w-[clamp(110px,10vw,160px)] h-[clamp(110px,10vw,160px)] rounded-full ${dotClass(hires, wTargets.hires)}`;
+      $("dot_leads").style.backgroundColor = dotColor(leads, wTargets.leads);
+      $("dot_appointments").style.backgroundColor = dotColor(appointments, wTargets.appointments);
+      $("dot_deals").style.backgroundColor = dotColor(deals, wTargets.deals);
+      $("dot_hires").style.backgroundColor = dotColor(hires, wTargets.hires);
 
       setText("leads_sub", remainingText(leads, wTargets.leads, "leads"));
       setText("appointments_sub", remainingText(appointments, wTargets.appointments, "appointments"));
